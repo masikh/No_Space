@@ -1,44 +1,33 @@
-INCLUDE = -I/sw/include/GL -I/sw/include
-LIBDIR  = -L. -L/usr/X11R6/lib -L/usr/lib -L/usr/X11R6/lib/modules/extensions/
-COMPILERFLAGS = -Wall
+# Paths
+INCLUDE = -I/opt/X11/include -I/opt/homebrew/include -I/opt/homebrew/include/GL
+LIBDIR  = -L/opt/X11/lib -L/opt/homebrew/lib
+
+# Compiler and flags
 CC = gcc
+COMPILERFLAGS = -Wall -DGL_SILENCE_DEPRECATION
 CFLAGS = $(COMPILERFLAGS) $(INCLUDE) `sdl-config --cflags`
+
+# Libraries
 LIBRARIES = -lGLU -lglut -lGL -lXmu -lXext -lXi -lm -lX11 -lSDL_mixer
-PROGRAM-NAME = no_space 
 
-all: $(PROGRAM-NAME)
+# Output binary name
+PROGRAM_NAME = no_space
 
-$(PROGRAM-NAME) : main.o texture.o objects.o isocahedron.o light.o scene1.o scene2.o scene3.o scene4.o
-	$(CC) $(CFLAGS) -o $(PROGRAM-NAME) $(LIBDIR) $(LIBRARIES) main.o texture.o objects.o isocahedron.o light.o scene1.o scene2.o scene3.o scene4.o
-	strip $(PROGRAM-NAME)
+# Object files
+OBJS = main.o texture.o objects.o isocahedron.o light.o scene1.o scene2.o scene3.o scene4.o
 
-main.o : main.c
-	$(CC) -c main.c $(CFLAGS)
+# Default rule
+all: $(PROGRAM_NAME)
 
-texture.o : texture.c
-	$(CC) -c texture.c $(CFLAGS)
+# Linking
+$(PROGRAM_NAME): $(OBJS)
+	$(CC) $(CFLAGS) -o $(PROGRAM_NAME) $(OBJS) $(LIBDIR) $(LIBRARIES)
+	strip $(PROGRAM_NAME)
 
-objects.o : objects.c
-	$(CC) -c objects.c $(CFLAGS)
+# Compile rules
+%.o: %.c
+	$(CC) -c $< $(CFLAGS)
 
-isocahedron.o : isocahedron.c
-	$(CC) -c isocahedron.c $(CFLAGS)
-
-light.o : light.c
-	$(CC) -c light.c $(CFLAGS)
-
-scene1.o : scene1.c
-	$(CC) -c scene1.c $(CFLAGS)
-
-scene2.o : scene2.c
-	$(CC) -c scene2.c $(CFLAGS)
-
-scene3.o : scene3.c
-	$(CC) -c scene3.c $(CFLAGS)
-
-scene4.o : scene4.c
-	$(CC) -c scene4.c $(CFLAGS)
+# Clean rule
 clean:
-	rm -f *.o
-
-
+	rm -f *.o $(PROGRAM_NAME)
